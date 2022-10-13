@@ -4,6 +4,22 @@ Credits: https://www.github.com/ACM-VIT/Codex-Cryptum
 We can get varous values for e from: https://www.cs.drexel.edu/~jpopyack/IntroCS/HW/RSAWorksheet.html
 """
 
+def euclid(m, n):
+    if n == 0:
+        return m
+    else:
+        r = m % n
+        return euclid(n, r)
+
+def eGenerator(phi: int):
+    keys = []
+    for i in range(2, phi): 
+        gcd = euclid(phi, i) 
+        if gcd == 1:
+            keys.append(i)
+
+    return keys
+
 def ExtendedGCD(e: int):
     d = 1
     e2 = e
@@ -73,12 +89,18 @@ plaintext = input("Enter plaintext:\n>>> ")
 # 1024 bit key
 P = 170007611163882156467583070449223838584656753148867131633512190380283049593667937234054209916788376143894984910718820080485130228317492395177494053588704733242066260215738749826985323020318900966858054745093276666701971181051299894745771442097807356197274229456637808451705389506462483315002459525647
 Q = 481643715591972638598218313298174701613643321254523884689569786332541775926781293302556117738302307356981609721753075739005830996780920022755885174107599088199228946117515541982018885577402946246815718309298010594221374531947169982607824253065171036917904012166986458504590468987728792073331236197449
-e = 2**16 + 1
-
+# e = 2**16 + 1
 N   = P * Q 
 phi = (P-1) * (Q-1)
 
+keys = eGenerator(phi)
+print("Choose one of the following for the public key e:\n")
+for i in range(len(keys)):
+    print(f"{i}: {keys[i]}")
+e_index = int(input("Enter your choice (Enter the index of the key): "))
+e = keys[e_index]
 d = ExtendedGCD(e)
+
 ciphertext = encrypt(plaintext, [e,N], n)
 message = decrypt(ciphertext, [d,N])
 
